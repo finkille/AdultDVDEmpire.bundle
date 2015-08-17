@@ -21,11 +21,10 @@ class ADEAgent(Agent.Movies):
     title = media.name
     if media.primary_metadata is not None:
       title = media.primary_metadata.title
-	  
+    
     query = String.URLEncode(String.StripDiacritics(title.replace('-','')))
     # Finds div with class=item
     for movie in HTML.ElementFromURL(ADE_SEARCH_MOVIES % query).xpath('//div[contains(@class, "col-xs-7")]/h3/a[1]'): 
-    	    	
       # curName = The text in the 'title' p
       curName = movie.text_content().strip()
       if curName.count(', The'):
@@ -47,10 +46,11 @@ class ADEAgent(Agent.Movies):
 
     # Thumb and Poster
     try:
-      img = html.xpath('//div[@id="Boxcover"]/a/img[contains(@src,"m.jpg")]')[0]
-      thumbUrl = img.get('src')
+      img = html.xpath('//div[@id="Boxcover"]/a[@rel="boxcover"]')[0]
+      thumbUrl = img.get('href')
+
       thumb = HTTP.Request(thumbUrl)
-      posterUrl = img.get('src').replace('m.jpg','h.jpg')
+      posterUrl = img.get('href')
       metadata.posters[posterUrl] = Proxy.Preview(thumb)
     except:
       pass
@@ -70,10 +70,13 @@ class ADEAgent(Agent.Movies):
 
     # Product info div
     data = {}
-    productinfo = HTML.StringFromElement(html.xpath('//div[@class="Section ProductInfo"]')[0])
-    productinfo = productinfo.replace('<strong>', '|')
-    productinfo = productinfo.replace('</strong>', ':').split('<h2>Detail</h2>')
-    productinfo = HTML.ElementFromString(productinfo[1]).text_content()
+
+    productinfo = HTML.StringFromElement(html.xpath('//*[@id="content"]/div[2]/div[4]/div/div[1]/ul')[0])
+
+    productinfo = productinfo.replace('<small>', '|')
+    productinfo = productinfo.replace('</small>', '')
+    productinfo = productinfo.replace('<li>', '').replace('</li>', '')
+    productinfo = HTML.ElementFromString(productinfo).text_content()
 
     for div in productinfo.split('|'):
       if ':' in div:
@@ -84,11 +87,11 @@ class ADEAgent(Agent.Movies):
     if data.has_key('Rating'):
       metadata.content_rating = data['Rating']
 
-    # Studio	  
+    # Studio    
     if data.has_key('Studio'):
       metadata.studio = data['Studio']
 
-    # Release	  
+    # Release   
     if data.has_key('Released'):
       try:
         metadata.originally_available_at = Datetime.ParseDate(data['Released']).date()
