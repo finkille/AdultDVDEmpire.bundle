@@ -61,12 +61,10 @@ class ADEAgent(Agent.Movies):
 
     # Summary.
     try:
-      metadata.summary = html.xpath('//div[@class="Section Synopsis"]/p[3]')[0].text_content().replace('\t','').strip()
-      if metadata.summary.find("Synopsis") != -1:
-        metadata.summary = metadata.summary.replace("Synopsis", '').strip()
-      if metadata.summary.find(metadata.tagline) != -1:
-        metadata.summary = metadata.summary.replace(metadata.tagline, '').strip()
-    except: pass
+      for summary in html.xpath('//*[@id="content"]/div[2]/div[2]/div/p'):
+        metadata.summary = summary.text_content()
+    except Exception, e:
+      Log('Got an exception while parsing summary %s' %str(e))
 
     # Product info div
     data = {}
