@@ -106,5 +106,6 @@ class ADEAgent(Agent.Movies):
         cname = cast.text_content().strip()
         if (len(cname) > 0):
           role = metadata.roles.new()
-          role.actor = cname
-    except: pass
+          role.name = cname
+    except Exception, e:
+      Log('Got an exception while parsing cast %s' %str(e))
