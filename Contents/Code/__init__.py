@@ -15,6 +15,7 @@ class ADEAgent(Agent.Movies):
   name = 'Adult DVD Empire'
   languages = [Locale.Language.English]
   primary_provider = True
+  accepts_from = ['com.plexapp.agents.localmedia']
 
 
   def search(self, results, media, lang):
