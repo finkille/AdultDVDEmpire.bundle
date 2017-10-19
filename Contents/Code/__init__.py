@@ -46,11 +46,11 @@ class ADEAgent(Agent.Movies):
 
     # Thumb and Poster
     try:
-      img = html.xpath('//div[@id="Boxcover"]/a[@rel="boxcover"]')[0]
-      thumbUrl = img.get('href')
+      img = html.xpath('//*[@id="front-cover"]/img')[0]
+      thumbUrl = img.get('src')
 
       thumb = HTTP.Request(thumbUrl)
-      posterUrl = img.get('href')
+      posterUrl = img.get('src')
       metadata.posters[posterUrl] = Proxy.Preview(thumb)
     except:
       pass
