@@ -49,15 +49,15 @@ class ADEAgent(Agent.Movies):
     metadata.title = media.title
 
     # Thumb and Poster
-    #try:
-    img = html.xpath('//*[@id="front-cover"]/img')[0]
-    thumbUrl = img.get('src')
+    try:
+      img = html.xpath('//*[@id="front-cover"]/img')[0]
+      thumbUrl = img.get('src')
 
-    thumb = HTTP.Request(thumbUrl)
-    posterUrl = img.get('src')
-    metadata.posters[posterUrl] = Proxy.Preview(thumb)
+      thumb = HTTP.Request(thumbUrl)
+      posterUrl = img.get('src')
+      metadata.posters[posterUrl] = Proxy.Preview(thumb)
  
-    #except: pass
+    except: pass
 
     # Tagline
     try: metadata.tagline = html.xpath('//p[@class="Tagline"]')[0].text_content().strip()
