@@ -1,7 +1,6 @@
 # AdultDVDEmpire - nag
-# Update: 14 October 2018
+# Update: 29 July 2018
 # Description: Updated for the changes to the new site.
-import re
 
 # URLS
 ADE_BASEURL = 'http://www.adultdvdempire.com'
@@ -14,13 +13,13 @@ GOOD_SCORE = 98
 def Start():
   HTTP.CacheTime = CACHE_1MINUTE
   HTTP.SetHeader('User-agent', 'Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.2; Trident/4.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0)')
-  
+
 class ADEAgent(Agent.Movies):
   name = 'Adult DVD Empire'
   languages = [Locale.Language.English]
   primary_provider = True
   accepts_from = ['com.plexapp.agents.localmedia']
- 
+
   def search(self, results, media, lang):
     title = media.name
     if media.primary_metadata is not None:
@@ -56,7 +55,6 @@ class ADEAgent(Agent.Movies):
       thumb = HTTP.Request(thumbUrl)
       posterUrl = img.get('src')
       metadata.posters[posterUrl] = Proxy.Preview(thumb)
- 
     except: pass
 
     # Tagline
@@ -167,48 +165,4 @@ class ADEAgent(Agent.Movies):
             metadata.genres.add(gname)
     except Exception, e:
       Log('Got an exception while parsing genres %s' %str(e))
-    
-    # Check for Series Tag (Collection)
-    if html.xpath('//h2/*[contains(@label, "Series")]'):
-      htmlseries = html.xpath('//h2/*[contains(@label, "Series")]')
-      metadata.collections.clear()
-      htmlseries = html.xpath('//h2/*[contains(@label, "Series")]')
-      for series in htmlseries:
-        seriesname = series.text_content().strip()
-        seriesname = re.findall(r'\"(.+?)\"',seriesname)
-        metadata.collections.add(seriesname[0])
-    
-    # Check for Average Rating
-    if html.xpath('//h2[@class="spacing-bottom-alt"]/text()')[0]:
-      averagerating = html.xpath('//h2[@class="spacing-bottom-alt"]/text()')[0]
-      averagerating = averagerating.strip()
-      averagerating = re.findall( r'\d+\.*\d*',averagerating)
-      try: 
-        metadata.rating = float(averagerating[0]) * 2
-      except: pass
-    
-    # Background Art From Page
-    try:
-      imgs = html.xpath('//a[contains(@rel, "scenescreenshots")]')
-      for img in imgs:
-        thumbUrl = img.attrib['href']
-        thumb = HTTP.Request(thumbUrl)
-        metadata.art[thumbUrl] = Proxy.Media(thumb)
-    except Exception, e:
-      Log('Got an exception while parsing screenshot images %s' %str(e))
 
-    # Background Art From Gallery if it exists
-    try:
-      gallery = html.xpath('//div[@class="user-action"]/a[contains(@class, "gallery")]')
-      for url in gallery:
-        galleryurl = ADE_BASEURL + url.attrib['href']
-    
-      gallery = HTML.ElementFromURL(galleryurl)
-      imagelist = gallery.xpath('//div/a[contains(@class, "thumb fancy")]')
-      
-      for imgs in imagelist:
-        imageurl = imgs.attrib['href']
-        image = HTTP.Request(imageurl)
-        metadata.art[imageurl] = Proxy.Media(image)
-    except Exception, e:
-        Log('Got an exception while parsing gallery images %s' %str(e))
