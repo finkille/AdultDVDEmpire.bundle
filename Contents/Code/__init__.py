@@ -147,6 +147,17 @@ class ADEAgent(Agent.Movies):
     except Exception, e:
       Log('Got an exception while parsing director %s' %str(e))
 
+    # Collections and Series
+    try:
+      metadata.collections.clear()
+      if html.xpath('//a[contains(@label, "Series")]'):
+        series = HTML.StringFromElement(html.xpath('//a[contains(@label, "Series")]')[0])
+        series = HTML.ElementFromString(series).text_content().strip()
+        series = series.split('"')
+        series = series[1]
+        metadata.collections.add(series)
+    except: pass
+
     # Genres
     try:
       metadata.genres.clear()
