@@ -1,6 +1,6 @@
-# AdultDVDEmpire - nag
-# Update: 29 July 2018
-# Description: Updated for the changes to the new site.
+# AdultDVDEmpire - finkille
+# Update: 24 Nov 2018
+# Description: Updated for VOD support and added support for series and minor fix of genres
 
 # URLS
 ADE_BASEURL = 'http://www.adultdvdempire.com'
