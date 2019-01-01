@@ -1,6 +1,6 @@
 # AdultDVDEmpire - finkille
-# Update: 24 Nov 2018
-# Description: Updated for VOD support and added support for series and minor fix of genres
+# Update: 2 Jan 2019
+# Description: Adjusted search results as suggested by Briadin 
 
 # URLS
 ADE_BASEURL = 'http://www.adultdvdempire.com'
@@ -27,7 +27,7 @@ class ADEAgent(Agent.Movies):
 
     query = String.URLEncode(String.StripDiacritics(title.replace('-','')))
     # Finds div with class=item
-    for movie in HTML.ElementFromURL(ADE_SEARCH_MOVIES % query).xpath('//div[contains(@class, "col-xs-7")]/h3/a[1]'): 
+    for movie in HTML.ElementFromURL(ADE_SEARCH_MOVIES % query).xpath('//div[contains(@class, "col-xs-6")]//div[@class="item-title"]/a[1]'):
       # curName = The text in the 'title' p
       curName = movie.text_content().strip()
       if curName.count(', The'):
@@ -73,7 +73,7 @@ class ADEAgent(Agent.Movies):
 
     # Match diffrent code, some titles are missing parts -- Still fails and needs to be refined.
     if html.xpath('//*[@id="content"]/div[2]/div[3]/div/div[1]/ul'):
-      productinfo = HTML.StringFromElement(html.xpath('//*[@id="content"]/div[2]/div[3]/div/div[1]/ul')[0])    
+      productinfo = HTML.StringFromElement(html.xpath('//*[@id="content"]/div[2]/div[3]/div/div[1]/ul')[0])
     if html.xpath('//*[@id="content"]/div[2]/div[4]/div/div[1]/ul'):
       productinfo = HTML.StringFromElement(html.xpath('//*[@id="content"]/div[2]/div[4]/div/div[1]/ul')[0])
     if html.xpath('//*[@id="content"]/div[2]/div[2]/div/div[1]/ul'):
@@ -97,11 +97,11 @@ class ADEAgent(Agent.Movies):
     if data.has_key('Rating'):
       metadata.content_rating = data['Rating']
 
-    # Studio    
+    # Studio
     if data.has_key('Studio'):
       metadata.studio = data['Studio']
 
-    # Release   
+    # Release
     if data.has_key('Released'):
       try:
         metadata.originally_available_at = Datetime.ParseDate(data['Released']).date()
@@ -113,13 +113,13 @@ class ADEAgent(Agent.Movies):
       metadata.roles.clear()
       if html.xpath('//*[contains(@class, "cast listgrid item-cast-list")]'):
         htmlcast = HTML.StringFromElement(html.xpath('//*[contains(@class, "cast listgrid item-cast-list")]')[0])
-		
+
 		# -- Terrible setup but works for now.
         htmlcast = htmlcast.replace('\n', '|').replace('\r', '').replace('\t', '').replace(');">', 'DIVIDER')
         htmlcast = htmlcast.replace('<span>', '').replace('</span>', '')
         htmlcast = htmlcast.replace('<li>', '').replace('</li>', '')
         htmlcast = htmlcast.replace('<small>Director</small>', '')
-		
+
 		# Change to high res img -- This part need to be made better.
         htmlcast = htmlcast.replace('t.jpg', 'h.jpg')
         htmlcast = htmlcast.replace('<img src="https://imgs2cdn.adultempire.com/res/pm/pixel.gif" alt="" title="" class="img-responsive headshot" style="background-image:url(', '|')
@@ -134,11 +134,11 @@ class ADEAgent(Agent.Movies):
             role.photo = imgURL
     except Exception, e:
       Log('Got an exception while parsing cast %s' %str(e))
-     
+
     # Director
     try:
       metadata.directors.clear()
-      if html.xpath('//a[contains(@label, "Director - details")]'):    
+      if html.xpath('//a[contains(@label, "Director - details")]'):
         htmldirector = HTML.StringFromElement(html.xpath('//a[contains(@label, "Director - details")]')[0])
         htmldirector = HTML.ElementFromString(htmldirector).text_content().strip()
         if (len(htmldirector) > 0):
@@ -176,4 +176,3 @@ class ADEAgent(Agent.Movies):
               if gname != "Sale": metadata.genres.add(gname)
     except Exception, e:
       Log('Got an exception while parsing genres %s' %str(e))
-
