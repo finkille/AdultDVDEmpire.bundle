@@ -1,6 +1,6 @@
 # AdultDVDEmpire - finkille
 # Update: 2 Jan 2019
-# Description: Adjusted search results as suggested by Briadin 
+# Description: Adjusted search results as suggested by Briadin
 
 # URLS
 ADE_BASEURL = 'http://www.adultdvdempire.com'
@@ -122,7 +122,7 @@ class ADEAgent(Agent.Movies):
 
 		# Change to high res img -- This part need to be made better.
         htmlcast = htmlcast.replace('t.jpg', 'h.jpg')
-        htmlcast = htmlcast.replace('<img src="https://imgs2cdn.adultempire.com/res/pm/pixel.gif" alt="" title="" class="img-responsive headshot" style="background-image:url(', '|')
+        htmlcast = htmlcast.replace('<img src="https://imgs.dvdempire.com/res/pm/pixel.gif" alt="" title="" class="img-responsive headshot" style="background-image:url(', '|')
         htmlcast = HTML.ElementFromString(htmlcast).text_content()
         htmlcast = htmlcast.split('|')
         htmlcast = htmlcast[1:]
